@@ -8,12 +8,34 @@ export async function createGoal(supabase, goal) {
   return { data, error };
 }
 
-export async function getGoals(supabase, user_id) {
+export async function getGoals(supabase, userId) {
   const { data, error } = await supabase
     .from("goals")
     .select("*")
-    .eq("user_id", user_id)
-    .order("created_at", { ascending: true });
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  return { data, error };
+}
+
+export async function getGoalById(supabase, goalId, userId) {
+  const { data, error } = await supabase
+    .from("goals")
+    .select("*")
+    .eq("id", goalId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  return { data, error };
+}
+
+export async function getGoalsByFolder(supabase, userId, folderId) {
+  const { data, error } = await supabase
+    .from("goals")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("folder_id", folderId)
+    .order("created_at", { ascending: false });
 
   return { data, error };
 }
@@ -31,11 +53,21 @@ export async function updateGoal(supabase, goalId, userId, updates) {
 }
 
 export async function deleteGoal(supabase, goalId, userId) {
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("goals")
     .delete()
     .eq("id", goalId)
+    .eq("user_id", userId);
+
+  return { error };
+}
+
+export async function deleteGoalsByFolder(supabase, userId, folderId) {
+  const { data, error } = await supabase
+    .from("goals")
+    .delete()
     .eq("user_id", userId)
+    .eq("folder_id", folderId)
     .select();
 
   return { data, error };

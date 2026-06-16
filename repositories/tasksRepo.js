@@ -13,28 +13,28 @@ export async function getTasks(supabase, userId) {
     .from("tasks")
     .select("*")
     .eq("user_id", userId)
-    .order("created_at", { ascending: true });
-
-  return { data, error };
-}
-
-export async function getTasksByGoal(supabase, userId, goalId) {
-  const { data, error } = await supabase
-    .from("tasks")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("goal_id", goalId)
     .order("created_at", { ascending: false });
 
   return { data, error };
 }
 
-export async function getDailyTasks(supabase, userId) {
+export async function getTasksWithoutFolder(supabase, userId) {
   const { data, error } = await supabase
     .from("tasks")
     .select("*")
     .eq("user_id", userId)
-    .is("goal_id", null)
+    .is("folder_id", null)
+    .order("created_at", { ascending: false });
+
+  return { data, error };
+}
+
+export async function getTasksByFolder(supabase, userId, folderId) {
+  const { data, error } = await supabase
+    .from("tasks")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("folder_id", folderId)
     .order("created_at", { ascending: false });
 
   return { data, error };
@@ -58,6 +58,17 @@ export async function deleteTask(supabase, taskId, userId) {
     .delete()
     .eq("id", taskId)
     .eq("user_id", userId)
+    .select();
+
+  return { data, error };
+}
+
+export async function deleteTasksByFolder(supabase, userId, folderId) {
+  const { data, error } = await supabase
+    .from("tasks")
+    .delete()
+    .eq("user_id", userId)
+    .eq("folder_id", folderId)
     .select();
 
   return { data, error };
